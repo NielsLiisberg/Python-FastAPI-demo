@@ -1,9 +1,9 @@
 # IBM i microservice demo using Python, FastAPI and Db2 with ODBC
 
 Microservices are getting more and more popular, and of cause
-you can develop microservices on the IBM i with python.
+you can develop microservices on the IBM i with Python .
 
-You have several options when it comes to which Python framework
+You have several options when it comes to which Python  framework
 to use. I have used `Flask` - and you can find a demo on my git
 using that. However, `FastAPI` is getting more attention these
 days for a number of reasons: it is simple to use, it is powerful
@@ -113,10 +113,10 @@ It will return a list of all IBM i db2 services available - and
 this is the list we will provide in our microservice demo in a moment.
 
 
-## Next step: Install Python 
+## Next step: Install Python  
 
 
-Our `FastAPI` microservice is coded in Python. So lets install that. Here we use version 3.9, and also notice that we install the python client to odbc:  
+Our `FastAPI` microservice is coded in Python . So lets install that. Here we use version 3.9, and also notice that we install the Python client to odbc:  
 
 ```
 yum install python39
@@ -124,7 +124,7 @@ yum install python39-pyodbc
 ````
 
 
-A nice trick is to setup a virtual python environment so you will 
+A nice trick is to setup a virtual Python environment so you will 
 not disturb other installations of Python on your IBM i. Here i put it
 into my project directory `/prj`. Perhaps consider to put in a more
 centralized place.
@@ -141,16 +141,16 @@ Please note: Each time you reconnect to ssh, you need to switch to that virtual 
 source /prj/python39/bin/activate
 ````
 
-Now we have python and and python package manager. Does it work? 
+Now we have Python and and Python package manager. Does it work? 
 
 ```
-pip --version
 python --version
+pip --version
 ```
 
-## Next step: Install FastAPI Python framework
+## Next step: Install the Python code
 
-Let's make a directory in our project folder for FastAPI and clone `this` git repo: 
+Let's make a directory in our project folder for FastAPI and clone `this` git repo to our IBM i: 
 
 ```
 mkdir /prj/FastAPI 
@@ -158,25 +158,25 @@ git -c http.sslVerify=false clone https://github.com/sitemule/ILEastic.git .
 cd  /prj/FastAPI 
 ```
 
-And then use the python package manger to install the required framework and tooling: 
+And then use the Python package manger to install the required framework and tooling: 
 
 ```
 pip install fastapi
 pip install uvicorn
 ````
 
-Here we install FastAPI - that is all the python code need for our microservice. 
-FastAPI however depends on uvicorn - it is a cool server that also messures if
+Here we install FastAPI - that is all the Python code need for our microservice. 
+FastAPI however depends on uvicorn - it is a cool server that 
+also measures if
 you change a source file, and if so-  reloads the application. that is quite
 nice while you develop so you don't need to recycle your application by hand.
 
-Lets try it out: The following code is called `hello.py`:
+Lets try it out: The following code is called `hello.py` in the repo:
 
 ```python
 from fastapi import FastAPI
 
 app = FastAPI()
-
 
 @app.get("/")
 async def root():
@@ -200,29 +200,42 @@ and we can examine the swagger interface from the `docs` page
 
 [http://my_ibm_i:60300/docs] (http://my_ibm_i:60300/docs)
 
+## The code
+
+Well, the `hello.py` does not look of much. However it is magic: 
+
+1) first we let Python include our FastAPI framework
+2) The `@app.get("/")` routes any http `GET` request to call the method `root`
+3) Here we simply returns a JSON object asynchronously  
+4) `uvicorn` now runs the Python code
+
+... we have a service :)
+
+
 
 ## The microservice
 
-Until now we have "just" set up the python environment. Bringing it all together - Python, FastAPI and ODBC on IBM i is now possible. The current git repo contains also the `serviceInfo.py` that does exactly that. Lets see if it works: 
+Until now we have "just" set up the Python environment. It is now possible to bringing it all together - Python, FastAPI and ODBC on IBM i . The current git repo contains also the `serviceInfo.py` that does exactly that. Lets see if it works: 
 
+```
 uvicorn servicesInfo:app --reload --port 60300 --host 0.0.0.0
-
+```
 
 .. amazing!! 
 
 ## The code:
 
 ```python
-### First we need python to import ODBC and FastAPI 
+### First we need Python to import ODBC and FastAPI 
 import pyodbc
 from fastapi import FastAPI, Query
 from typing import Union
 
 ### We have two globals:
-### The connection to our IBM i, and notice the *LOCAL. That is the default configuration  
+### 1) The connection to our IBM i, and notice the *LOCAL. That is the default configuration  
 connection =  pyodbc.connect("DSN=*LOCAL")
 
-### the app is a name-space for all our FastAPI functionality 
+### 2) the app is a name-space for all our FastAPI functionality 
 app = FastAPI()
 
 # Here is our real magic - Our primary endpoint:
