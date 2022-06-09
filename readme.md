@@ -1,19 +1,27 @@
-# IBM i microservice demo using Python, fastAPI and Db2 with ODBC
+# IBM i microservice demo using Python, FastAPI and Db2 with ODBC
 
-Microservices are getting more and more popular, and ofcause 
-you can develop microservies on the IBM i with python.
+Microservices are getting more and more popular, and of cause
+you can develop microservices on the IBM i with python.
 
-You have several options when it comes to which Python framework to use. I have used `Flask` - and you can find a demo on my git using that. However, `fastAPI` is getting more attetion these days for a number of reasons: it is simple to use, it is powerfull and it is .. fast ...
+You have several options when it comes to which Python framework
+to use. I have used `Flask` - and you can find a demo on my git
+using that. However, `FastAPI` is getting more attention these
+days for a number of reasons: it is simple to use, it is powerful
+and it is .. fast ...
 
-Another nice thing about `fastAPI` is the fact that it automatically provides the swagger interface for your service layer.
+Another nice thing about `FastAPI` is the fact that it 
+automatically provides the swagger interface for your service layer.
 
 .. So let's get started:
 
 # Your IBM i
-In this project there are lots of references to `my_ibm_i` both in code, development tool and test.
+In this project there are lots of references to `my_ibm_i` both in 
+code, development tool and test.
 
-This is of course the name of your IBM i. You can do yourself a favor and add the name `my_ibm_i` to 
-your `hosts` file and let it point to the IP address of your IBM i - and all the code, 
+This is of course the name of your IBM i. You can do yourself a favor 
+and add the name `my_ibm_i` to 
+your `hosts` file and let it point to the IP address of your IBM i - 
+and all the code, 
 development tool and test will work out of the box.
 
 [Edit host file](https://www.howtogeek.com/howto/27350/beginner-geek-how-to-edit-your-hosts-file/)
@@ -22,13 +30,15 @@ development tool and test will work out of the box.
 
 # Setup the environment
 
-I always use bash as my default shell. You can set that once and for all from ACS Run SQL script with: 
+I always use `bash` as my default shell. You can set that once and for 
+all from ACS Run SQL script with: 
 
 ```
 CALL QSYS2.SET_PASE_SHELL_INFO('*CURRENT', '/QOpenSys/pkgs/bin/bash');   
 ```
 
-On IBM i you will need the open source in you path (and a nice prompt). So if you don't have a .profile yet, then:
+On IBM i you will need the open source in you path (and a nice prompt). 
+So if you don't have a `.profile` file yet, then:
 ```
 ssh my_ibm_i
 echo 'PATH=/QOpenSys/pkgs/bin:$PATH' >> $HOME/.profile
@@ -36,17 +46,24 @@ echo 'PS1="\h-\$PWD:\n"' >> $HOME/.profile
 exit 
 ```
 
-For the shell you can also click SSH Terminal in ACS or use a terminal like putty 
+For the shell you can also click SSH Terminal in ACS or use a terminal
+like `putty` 
 
 (or you can even use call qp2term – but I suggest that you get use to ssh)
 
-From the terminal we need to install some open source tooling:
+## Install git 
+From the terminal we need to install some open source tooling. To 
+pull this project you first of all need the git client on your IBM i.
+
 
 ```
 ssh my_ibm_i
 yum install git
 ```
 
+.. And from now on, i assume you are keeping the ssh terminal open. So I will lave out the `ssh my_ibm_i`. 
+
+## Install ODBC
 The data in this demo is provided by ODBC. First we can pull the yum part.
 
 ```
@@ -59,9 +76,9 @@ It also requires the ODBC driver. Unfortunately you can
 pull that directly from the IBM i yum repo - (as we speak - this might change)
 
 You have to:
-1) download the zip file where you get ACS
+1) Download the zip file where you get ACS
 2) Unpack the zip file
-3) move the *rpm* to the IBM i 
+3) Move the *rpm* to the IBM i 
 4) Finally *yum* the *rpm*. 
 
 This is described much better here: 
@@ -77,9 +94,9 @@ Lets look at the ODBC configuration:
 ```
 odbcinst -j
 ```
-This shows the current configuration, that includes the configuration for your current IBM i - it is called ***LOCAL**
+This shows the current configuration. Notice that includes the configuration for your current IBM i - it is called `*LOCAL`
 
-Now with the bould in command isql it is possible to run a
+Now with the builtin command `isql` it is possible to run a
 sql command: 
 
 ````
@@ -92,13 +109,14 @@ And then enter:
 select * from qsys2.services_info
 ```
 
-It will return a list of all IBM i db2 services available - and this is the list we will provide in our microservice demo in a moment.
+It will return a list of all IBM i db2 services available - and 
+this is the list we will provide in our microservice demo in a moment.
 
 
 ## Next step: Install Python 
 
 
-Our **fastAPI** microservice is coded in Python. So lets install that. Here we use version 3.9, and also notice that we install the python client to odbc:  
+Our `FastAPI` microservice is coded in Python. So lets install that. Here we use version 3.9, and also notice that we install the python client to odbc:  
 
 ```
 yum install python39
@@ -106,7 +124,10 @@ yum install python39-pyodbc
 ````
 
 
-A nice trick is to setup a virtual python environment so you will not disturb other installations of Python on your IBM i. Here i put it into my project directory **/prj**. Perhaps consider to put in a more centralized place.
+A nice trick is to setup a virtual python environment so you will 
+not disturb other installations of Python on your IBM i. Here i put it
+into my project directory `/prj`. Perhaps consider to put in a more
+centralized place.
 
 ````
 mkdir /prj
@@ -127,14 +148,14 @@ pip --version
 python --version
 ```
 
-## Next step: Install fastAPI python framework
+## Next step: Install FastAPI Python framework
 
-Let's make a directory in our project folder for fastAPI and clone **this** git repo: 
+Let's make a directory in our project folder for FastAPI and clone `this` git repo: 
 
 ```
-mkdir /prj/fastAPI 
+mkdir /prj/FastAPI 
 git -c http.sslVerify=false clone https://github.com/sitemule/ILEastic.git .
-cd  /prj/fastAPI 
+cd  /prj/FastAPI 
 ```
 
 And then use the python package manger to install the required framework and tooling: 
@@ -144,12 +165,12 @@ pip install fastapi
 pip install uvicorn
 ````
 
-Here we install fastAPI - that is all the python code need for our microservice. 
-fastAPI however depends on uvicorn - it is a cool server that also messures if
+Here we install FastAPI - that is all the python code need for our microservice. 
+FastAPI however depends on uvicorn - it is a cool server that also messures if
 you change a source file, and if so-  reloads the application. that is quite
 nice while you develop so you don't need to recycle your application by hand.
 
-Lets try it out: The following code is called **hello.py**:
+Lets try it out: The following code is called `hello.py`:
 
 ```python
 from fastapi import FastAPI
@@ -163,7 +184,7 @@ async def root():
 
 ```
 
-Now everything should be in place - you start the application with **uvicorn**. Does it work?
+Now everything should be in place - you start the application with `uvicorn`. Does it work?
 
 ```
 uvicorn hello:app --reload --port 60300 --host 0.0.0.0
@@ -174,7 +195,7 @@ From your browser you can now open our application
 [http://my_ibm_i:60300](http://my_ibm_i:60300)
 
 
-and we can examine the swagger interface from the **docs** page
+and we can examine the swagger interface from the `docs` page
 
 
 [http://my_ibm_i:60300/docs] (http://my_ibm_i:60300/docs)
@@ -182,7 +203,7 @@ and we can examine the swagger interface from the **docs** page
 
 ## The microservice
 
-Until now we have "just" set up the python environment. Bringing it all together - Python, fastAPI and ODBC on IBM i is now possible. The current git repo contains also the **serviceInfo.py** that does exactly that. Lets see if it works: 
+Until now we have "just" set up the python environment. Bringing it all together - Python, FastAPI and ODBC on IBM i is now possible. The current git repo contains also the `serviceInfo.py` that does exactly that. Lets see if it works: 
 
 uvicorn servicesInfo:app --reload --port 60300 --host 0.0.0.0
 
@@ -192,7 +213,7 @@ uvicorn servicesInfo:app --reload --port 60300 --host 0.0.0.0
 ## The code:
 
 ```python
-### First we need python to import ODBC and fastAPI 
+### First we need python to import ODBC and FastAPI 
 import pyodbc
 from fastapi import FastAPI, Query
 from typing import Union
@@ -201,11 +222,11 @@ from typing import Union
 ### The connection to our IBM i, and notice the *LOCAL. That is the default configuration  
 connection =  pyodbc.connect("DSN=*LOCAL")
 
-### the app is a name-space for all our fastAPI functionality 
+### the app is a name-space for all our FastAPI functionality 
 app = FastAPI()
 
 # Here is our real magic - Our primary endpoint:
-# the @app.get will let fastAPI 
+# the @app.get will let FastAPI 
 # "route" any http GET operation with the name of "listServices"   
 # whatever we "return" from this method goes to the browser.
 # Note the "search" it will be shown in swagger as a query parameter of string of length 50  
