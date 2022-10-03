@@ -7,11 +7,11 @@ app = FastAPI()
 
 # Our primary endpoint:
 # Usecase:
-# http://my_ibm_i:60300/listServices?search=%PTF%
+# http://my_ibm_i:60300/listServices?search=ptf
 # http://my_ibm_i:60300/docs
 @app.get("/listServices")
 def listServices(search: Union[str, None] = Query(default=None, max_length=50)):
-    sql = f'select * from qsys2.services_info where service_name like {string_quote(search)}'
+    sql = f'select * from qsys2.services_info where service_name like {string_quote("%" + search.upper() + "%")}'
     return fetch_all (connection , sql)
 
 # Utility: 
