@@ -155,7 +155,7 @@ Let's make a directory in our project folder for FastAPI and clone `this` git re
 ```
 mkdir /prj/FastAPI 
 cd  /prj/FastAPI
-git -c http.sslVerify=false clone https://github.com/NielsLiisberg/Python-FastAPI-demo.
+git -c http.sslVerify=false clone https://github.com/NielsLiisberg/Python-FastAPI-demo.git
 ```
 
 And then use the Python package manger to install the required framework and tooling: 
