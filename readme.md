@@ -72,8 +72,8 @@ yum install unixODBC
 yum install unixODBC-devel
 ```
 
-It also requires the ODBC driver. Unfortunately you can
-pull that directly from the IBM i yum repo - (as we speak - this might change)
+It also requires the ODBC driver. For new TR's it is in @ibmi-base. But for older 
+TR's - Unfortunately you can not pull that directly from the IBM i yum repo: 
 
 You have to:
 1) Download the zip file where you get ACS
