@@ -6,7 +6,7 @@ app = FastAPI()
 
 
 @app.get("/")
-def root():
+async def root():
     c1 = connection.cursor()
     c1.execute('select * from qiws.qcustcdt')
     return result2dict(c1)
